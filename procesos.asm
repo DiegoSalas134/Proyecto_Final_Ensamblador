@@ -16,7 +16,7 @@ intercambiar_celdas:
 
     ;convertir indice a desplazamiento
     movsxd rax, eax ;Pasa el indice a un registro de 64 bits (rax) para manejar memoria
-    lea r10, [rcx + rax*4] ;cargar direccion efectiva
+    lea r10, [rcx + rax] ;cargar direccion efectiva
 
     ;fila2 y columna2
     mov r11d, [rsp + 40] 
