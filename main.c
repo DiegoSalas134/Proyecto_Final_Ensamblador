@@ -10,9 +10,9 @@ void intercambiar_celdas(
     int fila2, int columna2
 );
 
-void imprimir(char matriz[FILAS][COLUMNAS], int jugador_fila, int jugador_columna) {
+void imprimir(char matriz[FILAS][COLUMNAS], int jugador_fila, int jugador_columna, int monedas,int llaves, int pasos) {
     system("cls");
-    printf(" ==== Mapa BitQuest 20x20 ==== \n\n");
+    printf(" ===================== Mapa BitQuest 20x20 ====================== \n\n");
     
     //calculos para iniciarcentrando al jugador en el mapa
     int inicio_fila = jugador_fila - 10;
@@ -30,7 +30,20 @@ void imprimir(char matriz[FILAS][COLUMNAS], int jugador_fila, int jugador_column
         }
         printf("\n");
     }
-    printf("\nControles: w (arriba), a (izquierda), s (abajo), d (derecha)\n");
+
+    //estado del jugador
+    printf("\nNivel: 1\n");
+    if (llaves == 1){
+        printf("Llave: Si\n");
+    }else{
+        printf("Llave: No\n");
+    }
+
+    printf("Pasos: %d\n", pasos);
+    printf("Monedas obtenidas: %d\n", monedas);
+
+    printf("\nControles: w (arriba), a (izquierda), s (abajo), d (derecha), q (salir)\n");
+
 }
 
 void iniciar_matriz(char matriz[FILAS][COLUMNAS]) {
@@ -43,7 +56,11 @@ void iniciar_matriz(char matriz[FILAS][COLUMNAS]) {
             }
         }
     }
-    matriz[1][1] = 'X'; //posicion inicial del jugador
+    matriz[1][1] = 'P'; //posicion inicial del jugador
+    matriz[2][5] = 'M'; //moneda
+    matriz[3][5] = 'K'; //llave
+    matriz[4][5] = 'D'; //puerta
+    matriz[5][5] = 'E'; //Salida
 }
 
 int main(){
@@ -52,10 +69,15 @@ int main(){
     int jugador_fila = 1, jugador_columna = 1;
     char movimiento;
 
+    int contador_monedas = 0;
+    int contador_llaves = 0;
+    int contador_pasos = 0;
+
+
     iniciar_matriz(matriz);
     do
     {
-        imprimir(matriz, jugador_fila, jugador_columna);
+        imprimir(matriz, jugador_fila, jugador_columna, contador_monedas, contador_llaves, contador_pasos);
         printf("Ingrese su movimiento: ");
         scanf(" %c", &movimiento);
         movimiento = tolower(movimiento);
@@ -86,14 +108,30 @@ int main(){
                 continue;
         }
         
-        //verificar que el movimiento sea valido (no chocar con paredes)
-        if (matriz[tmp_fila][tmp_columna] != '#') {
-            matriz[jugador_fila][jugador_columna]= '.'; //ponemos un punto en la celda anterior del jugador
-            jugador_fila = tmp_fila;
-            jugador_columna = tmp_columna;//actualizamos la posicion del jugador
-            matriz[jugador_fila][jugador_columna] = 'P'; //colocamos al jugador en la nueva posicion
-        } 
-           
+        //que hya en la celda?
+        char destino = matriz[tmp_fila][tmp_columna];
+        if (destino == '#')
+        {
+            continue; //es una pared
+        }
+        if (destino == 'D' && contador_llaves == 0){
+            continue;
+        }
+        //ya en esta seccion el movimiento es valido y se va a mover el jugador
+        if (destino == 'M') {
+            contador_monedas++;
+        }else if (destino=='K'){
+            contador_llaves++;
+        }else if (destino=='E'){
+            printf("Felicidades!!! Has ganado el juego BitQuest\n");
+            return 0;
+        }
+        contador_pasos++;
+        matriz[jugador_fila][jugador_columna] = '.';//deja un rastro del camino recorrido
+        jugador_fila = tmp_fila;
+        jugador_columna = tmp_columna;
+        matriz[jugador_fila][jugador_columna] = 'P';//mover al jugador
+        
     } while (movimiento != 'q');
     
     return 0;
