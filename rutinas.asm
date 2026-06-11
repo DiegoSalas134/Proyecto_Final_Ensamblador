@@ -1,39 +1,47 @@
 bits 64
 default rel
 
-global intercambiar_celdas
+global contar_caracteres
+global validar_movimiento
 
-;parametros 5 y 6
-;[rsp + 40] fila2
-;[rsp + 48] columna2
 section .text
 
-intercambiar_celdas:
-    ; clacular el indice= fila1*columnas+columna1
-    mov eax, r8d ;Copia fila1 (r8d) a la caja de trabajo eax
-    imul eax, edx ;Multiplica eax (fila1) por edx (columnas) el Resultado se queda en eax
-    add eax, r9d ;suma r9d (columna1) a eax
+;funcion 1: contar_caracteres
+contar_caracteres:
+    xor rax, rax ;contador de monedas
+    xor r9, r9 ;i=0 (indice para recorrer el mapa)
 
-    ;convertir indice a desplazamiento
-    movsxd rax, eax ;Pasa el indice a un registro de 64 bits (rax) para manejar memoria
-    lea r10, [rcx + rax] ;cargar direccion efectiva
+.ciclo:
+    cmp r9, rdx ;comparar el indice r9 con el total de celdas rdx
+    jge .fin ;si el indice es mayor o igual al total de celdas salimos del ciclo
 
-    ;fila2 y columna2
-    mov r11d, [rsp + 40] 
-    mov eax, r11d
-    imul eax, edx
-    mov r11d, [rsp + 48]
-    add eax, r11d
+    mov r10b, byte [rcx + r9] ;cargar el caracter actual del mapa en r10d
+    cmp r10b, r8b ;comparar el caracter que se nos pide desde C
+    jne .siguiente ;si no son iguales saltamos y no cuentamos
 
-    movsxd rax, eax
-    lea r11, [rcx + rax*4]
+    inc rax ;si son iguales incrementamos el contador
 
-    ;intercambiar
-    mov eax, [r10]
-    mov r8d, [r11]
-
-    mov [r10], r8d
-    mov [r11], eax
+.siguiente:
+    inc r9 ;i++
+    jmp .ciclo ;repetimos el ciclo
+.fin:
     ret
 
+;funcion 2: validar_movimiento
+validar_movimiento:
+    mov eax, r8d ;le pasamos nueva_fila a eax
+    imul eax, edx ;multiplicamos por las columnas
+    add eax, r9d ;sumamos nueva_columna para obtener el indice final
 
+    movsxd rax, eax ;extendemos a 64 bits
+    mov r10b, byte [rcx + rax] ;cargamos el caracter del mapa en r10b
+
+    ;validamos si es una pared
+    cmp r10b, '#' ;comparar con el caracter de pared
+    je .es_pared ;si es una pared no se puede mover
+
+    mov rax, 1 ;ponemos 1 porque es un movimiento valido
+    ret
+.es_pared:
+    mov rax, 0 ;ponemos 0 porque es un movimiento no valido
+    ret

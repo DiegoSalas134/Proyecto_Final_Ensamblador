@@ -15,9 +15,13 @@ int main(){
 
 
     iniciar_matriz(matriz);
+
+    int total_celdas = FILAS * COLUMNAS;
+    int monedas_totales = contar_caracteres(&matriz[0][0], total_celdas, 'M');
+    
     do
     {
-        imprimir(matriz, jugador_fila, jugador_columna, contador_monedas, contador_llaves, contador_pasos);
+        imprimir(matriz, jugador_fila, jugador_columna, contador_monedas, contador_llaves, contador_pasos, monedas_totales);
         printf("Ingrese su movimiento: ");
         scanf(" %c", &movimiento);
         movimiento = tolower(movimiento);
@@ -49,11 +53,10 @@ int main(){
         }
         
         //que hya en la celda?
-        char destino = matriz[tmp_fila][tmp_columna];
-        if (destino == '#')
-        {
-            continue; //es una pared
+        if (validar_movimiento(&matriz[0][0], COLUMNAS, tmp_fila, tmp_columna) == 0){
+            continue;
         }
+        char destino = matriz[tmp_fila][tmp_columna];
         if (destino == 'D' && contador_llaves == 0){
             continue;
         }

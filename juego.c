@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "juego.h"
 
-void imprimir(char matriz[FILAS][COLUMNAS], int jugador_fila, int jugador_columna, int monedas,int llaves, int pasos) {
+void imprimir(char matriz[FILAS][COLUMNAS], int jugador_fila, int jugador_columna, int monedas,int llaves, int pasos, int monedas_totales) {
     system("cls");
     printf(" ===================== Mapa BitQuest 20x20 ====================== \n\n");
     
@@ -32,7 +32,7 @@ void imprimir(char matriz[FILAS][COLUMNAS], int jugador_fila, int jugador_column
     }
 
     printf("Pasos: %d\n", pasos);
-    printf("Monedas obtenidas: %d\n", monedas);
+    printf("Monedas recolectadas: %d / %d\n", monedas, monedas_totales);
 
     printf("\nControles: w (arriba), a (izquierda), s (abajo), d (derecha), q (salir)\n");
 
